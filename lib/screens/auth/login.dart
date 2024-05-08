@@ -54,7 +54,10 @@ class LoginScreen extends StatelessWidget {
               height: 20,
             ),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("We will update it soon")));
+              },
               style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   surfaceTintColor: Colors.white,
@@ -87,7 +90,9 @@ class LoginScreen extends StatelessWidget {
               height: 20,
             ),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("We will update it soon")));
+              },
               style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueAccent.shade700,
                   elevation: 0,

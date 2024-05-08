@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:MediFlow/screens/home/symptoms_assesment.dart';
 import 'package:MediFlow/screens/other/settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import '../other/on_boarding_screen.dart';
 
 class HomeBody extends StatelessWidget {
   final String userName;
@@ -9,6 +13,17 @@ class HomeBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    List<OnBoardingModel>takeCareYourHealth =[
+      OnBoardingModel(imageUrl: 'asset/images/martin-sanchez-Tzoe6VCvQYg-unsplash.jpg',title: 'Do you have Flu or Covid-19', des: ''),
+      OnBoardingModel(imageUrl: 'asset/images/edgar-soto-iaHZUC69YHA-unsplash.jpg',title: 'Do you have Fever', des: ''),
+      OnBoardingModel(imageUrl: 'asset/images/sander-sammy-ufgOEVZuHgM-unsplash.jpg',title: 'Do you have Headache', des: ''),
+    ];
+
+
+
+
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -80,8 +95,6 @@ class HomeBody extends StatelessWidget {
               ),
 
               Text('Take care of your health',style: TextStyle(fontFamily: 'Poppins-Bold',fontSize: 15,color: Colors.black.withOpacity(0.8)),),
-
-
               Padding(
                   padding: const EdgeInsets.only(top: 15,bottom: 15),
                   child: SizedBox(
@@ -91,22 +104,26 @@ class HomeBody extends StatelessWidget {
                       padEnds: false,
                       controller: PageController(viewportFraction: 0.8),
                       allowImplicitScrolling: true,
-                      children: List.generate(5, (index) => Container(
-                        margin: EdgeInsets.only(right: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: ClipRRect(
+                      children: List.generate(takeCareYourHealth.length, (index) => InkWell(
+                        onTap: ()async{
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(right: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: ClipRRect(
 
-                                borderRadius: BorderRadius.circular(10),
-                                child: Image.asset('asset/images/marcelo-leal-k7ll1hpdhFA-unsplash.jpg',fit: BoxFit.fill,width:MediaQuery.of(context).size.width-(MediaQuery.of(context).size.width/8),),
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.asset(takeCareYourHealth[index].imageUrl,fit: BoxFit.fill,width:MediaQuery.of(context).size.width-(MediaQuery.of(context).size.width/8),),
+                                ),
                               ),
-                            ),
-                            SizedBox(height: 10,),
-                            Text('Do you have the Flu or Covid -19')
-                          ],
+                              SizedBox(height: 10,),
+                              Text(takeCareYourHealth[index].title,)
+                            ],
+                          ),
                         ),
                       )),
                     ),

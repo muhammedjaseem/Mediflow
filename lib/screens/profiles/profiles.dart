@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 //import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class _ProfilesState extends State<Profiles> {
       isLoading =true;
       profiles.clear();
     });
-     /* final QuerySnapshot<Map<String, dynamic>> snapshot =await FirebaseFirestore.instance.collection('Profiles') // Assuming 'users' is your collection name
+      final QuerySnapshot<Map<String, dynamic>> snapshot =await FirebaseFirestore.instance.collection('Profiles') // Assuming 'users' is your collection name
           .where('userId', isEqualTo: FirebaseAuth.instance.currentUser?.uid)
           .get();
 
@@ -37,10 +38,11 @@ class _ProfilesState extends State<Profiles> {
 
         profiles.add(ProfileModel.fromJson(element.data()));
       }
-*/
-      setState(() {
+      if(mounted) {
+        setState(() {
         isLoading =false;
       });
+      }
   }
   @override
   void initState() {
@@ -81,7 +83,10 @@ class _ProfilesState extends State<Profiles> {
               children: [
                 Align(
                   alignment: Alignment.center,
-                    child: CircularProgressIndicator()),
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: CircularProgressIndicator(),
+                    )),
               ],
             );
           }
@@ -91,7 +96,34 @@ class _ProfilesState extends State<Profiles> {
               itemCount: profiles.length,
                 itemBuilder: (context,index){
               return ListTile(
-                onTap: (){},
+                onTap: (){
+                  final item =profiles[index];
+                  showModalBottomSheet(context: context,
+
+                      constraints: BoxConstraints(maxHeight:MediaQuery.of(context).size.height/2 ),
+                      builder: (context)=>Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('Details',style: Theme.of(context).textTheme.titleLarge,),
+                            Divider(),
+                            SizedBox(height: 10,),
+                            Text('Name: ${item.name}'),
+                            SizedBox(height: 2,),
+                            Text('Email: ${item.email}'),
+                            SizedBox(height: 2,),
+                            Text('Date Of Birth: ${item.dob}'),
+                            SizedBox(height: 2,),
+                            Text('Phone Number: ${item.phoneNumber}'),
+                            SizedBox(height: 5,),
+                          ],
+                        ),
+                      ));
+
+
+                },
                   title: Text(profiles[index].name.toString()),
                 subtitle: Text(profiles[index].email.toString(),style: Theme.of(context).textTheme.bodySmall,),
               trailing: const Icon(Icons.keyboard_arrow_right_outlined),);

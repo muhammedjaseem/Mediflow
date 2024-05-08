@@ -79,7 +79,7 @@ class _SignupWithEmailState extends State<SignupWithEmail> {
               ),
               TextFormField(
                 controller: emailController,
-                validator: helper.emailValidation,
+                validator: (v)=>helper.emailValidation(v.toString()),
 
                 keyboardType: TextInputType.emailAddress,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -192,6 +192,7 @@ class _SignupWithEmailState extends State<SignupWithEmail> {
               Center(
                   child: TextButton(
                       onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("We will update it soon")));
 
                       },
                       child: const Text(

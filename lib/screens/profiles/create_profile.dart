@@ -1,11 +1,10 @@
-import 'dart:convert';
 //import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:MediFlow/helper/helper.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 class CreateProfile extends StatefulWidget {
   const CreateProfile({super.key});
 
@@ -24,7 +23,7 @@ class _CreateProfileState extends State<CreateProfile> {
   final formKey =GlobalKey<FormState>();
   InputDecoration getInputDecoration (hint) =>InputDecoration(
     contentPadding: const EdgeInsets.only(left: 15,right: 15),
-    hintText: hint,
+    labelText: hint,
     border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(30),
         borderSide: const BorderSide(color: Colors.black,)
@@ -59,12 +58,13 @@ class _CreateProfileState extends State<CreateProfile> {
                 keyboardType: TextInputType.text,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: (v){
-                  if(v?.isEmpty ==true){
+                  if(v?.isEmpty ==true)
+                  {
                     return 'Name is Required';
                   }
                   return null;
                 },
-                decoration: getInputDecoration('name')
+                decoration: getInputDecoration('Name')
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 15),
@@ -101,6 +101,22 @@ class _CreateProfileState extends State<CreateProfile> {
               TextFormField(
                 controller: dobController,
                 keyboardType: TextInputType.datetime,
+                readOnly: true,
+                onTap:(){
+                 DateTime currentDate =DateTime.now();
+
+                 showDialog(context: context, builder: (context){
+                   return  DatePickerDialog(
+                       helpText: 'Select Date Of Birth',
+                       firstDate: DateTime(currentDate.year-100,currentDate.month,currentDate.day),
+                       initialEntryMode:DatePickerEntryMode.calendarOnly,
+                       lastDate: currentDate);
+                 }).then((value) {
+                   DateFormat format = DateFormat("dd-MM-yyyy");
+                   dobController.text =format.format(value??currentDate);
+
+                 });
+                 },
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 decoration: getInputDecoration('Date of Birth'),
                 validator: (v){
@@ -117,7 +133,7 @@ class _CreateProfileState extends State<CreateProfile> {
                   keyboardType: TextInputType.emailAddress,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: getInputDecoration('Email'),
-                validator: Helper().emailValidation,),
+                validator: (v)=>Helper().emailValidation(v.toString(),isRequired: false),),
               ),
                 TextFormField(
                 controller: phoneController,
@@ -128,9 +144,7 @@ class _CreateProfileState extends State<CreateProfile> {
                 ],
                 decoration: getInputDecoration('Mobile number'),
                   validator: (v){
-                    if(v!.isEmpty){
-                      return 'Phone number  is Required';
-                    }
+
                     return null;
                   },
               ),
@@ -144,9 +158,9 @@ class _CreateProfileState extends State<CreateProfile> {
       floatingActionButton:isLoading ==false? FloatingActionButton(onPressed: (){
 
         if(formKey.currentState!.validate()){
-          // setState(() {
-          //   isLoading =true;
-          // });
+          setState(() {
+            isLoading =true;
+          });
           var data ={
             'userId':"${ FirebaseAuth.instance.currentUser?.uid}",
             'name':nameController.text,
@@ -155,17 +169,17 @@ class _CreateProfileState extends State<CreateProfile> {
             'email':emailController.text,
             'phoneNumber':phoneController.text,
           };
-          /*var db = FirebaseFirestore.instance.collection('Profiles');
+          var db = FirebaseFirestore.instance.collection('Profiles');
           db.add(data).then((value) {
             setState(() {
               isLoading =false;
             });
             Navigator.pop(context,true);
-          });*/
+          });
 
         }
       },
-      child: const Text("Add"),):CircularProgressIndicator(),
+      child: const Text("Add"),):const CircularProgressIndicator(),
     );
   }
 }

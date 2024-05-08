@@ -1,7 +1,11 @@
+import 'dart:convert';
+
+import 'package:MediFlow/model/ai_res_model.dart' as Ai;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:http/http.dart'as http;
 /*
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -26,7 +30,7 @@ class _SymptomsAssesmentState extends State<SymptomsAssesment> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(
+        title: const Text(
             'Chat with AI'),
       ),
      body: IndexedStack(
@@ -63,6 +67,56 @@ class _SectionStreamChatState extends State<SectionStreamChat> {
   set loading(bool set) => setState(() => _loading = set);
   final List<Content> chats = [];
 
+
+
+
+  Future<Ai.AiModel>getMessage(String message)async{
+
+
+    try{
+      final String url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyCVceLhU5DiT9Tq-A4JBRiOFcUaYFANRcY';
+
+      Map<String, dynamic> requestBody = {
+        "contents": [
+          {
+            "parts": [
+              {"text": "$message"}
+            ]
+          }
+        ]
+      };
+
+      String requestBodyJson = json.encode(requestBody);
+
+      Map<String, String> headers = {
+        'Content-Type': 'application/json',
+      };
+
+      try {
+        final http.Response response = await http.post(
+          Uri.parse(url),
+          headers: headers,
+          body: requestBodyJson,
+        );
+
+        if (response.statusCode == 200) {
+          // Handle successful response
+         return Ai.aiModelFromJson(response.body);
+        } else {
+          // Handle error response
+          return Ai.AiModel(candidates: [Ai.Candidate(content: Ai.Content(parts: [Ai.Part(text: 'Error')]))]);
+        }
+      } catch (e) {
+        // Handle network error
+        return Ai.AiModel(candidates: [Ai.Candidate(content: Ai.Content(parts: [Ai.Part(text: 'Error')]))]);
+
+      }
+    }catch(E){
+      return Ai.AiModel(candidates: [Ai.Candidate(content: Ai.Content(parts: [Ai.Part(text: 'Error')]))]);
+
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -91,43 +145,32 @@ class _SectionStreamChatState extends State<SectionStreamChat> {
               ),
             )
                 : const Center(child: Text(''))),
-        if (loading) Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: const CircularProgressIndicator(),
+        if (loading) const Padding(
+          padding: EdgeInsets.only(bottom: 10),
+          child: CircularProgressIndicator(),
         ),
         ChatInputBox(
           controller: controller,
-          onSend: () {
+          onSend: () async{
 
 
             if (controller.text.isNotEmpty) {
               final searchedText = controller.text;
               chats.add(
-                  Content(role: userName, parts: [Parts(text: searchedText)]));
+                  Content(role: 'Me', parts: [Parts(text: searchedText)]));
               controller.clear();
               loading = true;
-
-              gemini.streamChat(chats,).listen((value) {
-
-                loading = false;
+              await getMessage(searchedText).then((value) {
                 setState(() {
-                  if (chats.isNotEmpty &&
-                      chats.last.role == value.content?.role) {
+                  if (value.candidates!.isNotEmpty &&
+                      chats.last.role == value.candidates?.first.content?.role) {
                     chats.last.parts!.last.text =
-                    '${chats.last.parts!.last.text}${value.output}';
+                    '${chats.last.parts!.last.text}${value.candidates?.first.content?.parts?.first.text}';
                   } else {
                     chats.add(Content(
-                        role: 'AI', parts: [Parts(text: value.output)]));
+                        role: 'AI', parts: [Parts(text: '${value.candidates?.first.content?.parts?.first.text}')]));
                   }
-                });
-              })
-                  .onError((e){
-
-                    print(e.toString());
-                loading = false;
-                setState(() {
-                  chats.add(Content(
-                      role: 'AI', parts: [Parts(text: 'something went wrong ${e.toString()}')]));
+                  loading = false;
                 });
               });
             }
@@ -140,25 +183,41 @@ class _SectionStreamChatState extends State<SectionStreamChat> {
   Widget chatItem(BuildContext context, int index) {
     final Content content = chats[index];
 
-    return Card(
-      elevation: 0,
-      color:
-      content.role == 'AI' ? Colors.white : Colors.transparent,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(content.role ?? 'role'),
-            Markdown(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                data:
-                content.parts?.lastOrNull?.text ?? 'cannot generate data!'
-            ),
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 10,bottom: 5,top: 5),
+          child: Text(content.role ?? 'role',style: TextStyle(color: Colors.black,fontSize: 16,fontFamily: 'Poppins-SemiBold'),),
         ),
-      ),
+
+        Card(
+          elevation: 0,
+          color:
+          content.role == 'Me' ? Colors.blue .shade300: Colors.green.shade300,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Markdown(
+                    shrinkWrap: true,
+                    styleSheet: MarkdownStyleSheet(
+                      a: TextStyle(color: Colors.white),
+                      h1: TextStyle(color: Colors.white),
+                      h2: TextStyle(color: Colors.white),
+                      h3: TextStyle(color: Colors.white),
+                      h4: TextStyle(color: Colors.white)
+                    ),
+                    physics: const NeverScrollableScrollPhysics(),
+                    data: content.parts?.lastOrNull?.text ?? 'cannot generate data!'
+                ),
+
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -196,7 +255,7 @@ class ChatInputBox extends StatelessWidget {
                  decoration: const InputDecoration(
 
                    contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                   hintText: 'Type ur symptoms',
+                   hintText: 'Type your symptoms',
                    border: InputBorder.none,
                  ),
                  onTapOutside: (event) =>
@@ -210,7 +269,7 @@ class ChatInputBox extends StatelessWidget {
              ),
            )
          ],
-                  ),
+        ),
       ),
     );
   }

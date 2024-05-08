@@ -57,7 +57,9 @@ String? userName ='';
 
               return const Profiles();
             }else{
-              return const SizedBox();
+              return const Center(
+                child: Text("Coming soon",style: TextStyle(color: Colors.black,fontSize: 20),)
+              );
             }
           },
         ),
@@ -71,7 +73,7 @@ String? userName ='';
             });
 
           },
-          type: BottomNavigationBarType.shifting,
+          type: BottomNavigationBarType.fixed,
           unselectedFontSize: 12,
           selectedLabelStyle: const TextStyle(fontSize: 11,fontFamily: 'Poppins-SemiBold'),
           unselectedLabelStyle: const TextStyle(fontSize: 11,fontFamily: 'Poppins-SemiBold'),

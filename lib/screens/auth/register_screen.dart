@@ -83,7 +83,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Text('Email',style: TextStyle(fontSize: textTheme.bodyLarge?.fontSize,fontFamily: 'Poppins-Bold'),),
               ),
               TextFormField(
-                validator: helper.emailValidation,
+                validator: (v)=>helper.emailValidation(v.toString()),
                 controller: emailController,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 keyboardType: TextInputType.emailAddress,
@@ -195,7 +195,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),),
               ),
 
-              const Padding(padding: EdgeInsets.only(top: 20,bottom: 20),child: Center(child: Text('Or:',)),),
+           /*   const Padding(padding: EdgeInsets.only(top: 20,bottom: 20),child: Center(child: Text('Or:',)),),
               ElevatedButton(onPressed: ()async{
 
 
@@ -253,7 +253,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     backgroundColor: Colors.blueAccent.shade700,
                     elevation: 0,
                     fixedSize: Size(size.width, 50)
-                ),),
+                ),),*/
             ],
 
           ),

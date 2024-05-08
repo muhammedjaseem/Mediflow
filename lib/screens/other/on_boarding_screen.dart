@@ -20,7 +20,7 @@ class OnBoardingScreen extends StatefulWidget {
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
-  final List<OnBoardingModel> items=[OnBoardingModel(title: "gggLet's get started",des: 'Personalise your health profile and manage your medical data with free account',imageUrl: 'asset/images/8629258.jpg'),OnBoardingModel(title: 'check your symptomsvv', des: 'Take a few moments to complete your assesment',imageUrl: 'asset/images/check_your_symptoms.jpeg'),OnBoardingModel(title: 'Review possible causes', des: 'Uncover what may be causing your symptoms',imageUrl: 'asset/images/WhatsApp Image 2024-05-06 at 1.26.47 PM.jpeg'),OnBoardingModel(title: 'Choose what to do next', des: 'Get trusted advice about your care options',imageUrl: 'asset/images/img.png'),];
+  final List<OnBoardingModel> items=[OnBoardingModel(title: "Let's get started",des: 'Personalise your health profile and manage your medical data with free account',imageUrl: 'asset/images/8629258.jpg'),OnBoardingModel(title: 'check your symptoms', des: 'Take a few moments to complete your assessment',imageUrl: 'asset/images/check_your_symptoms.jpeg'),OnBoardingModel(title: 'Review possible causes', des: 'Uncover what may be causing your symptoms',imageUrl: 'asset/images/WhatsApp Image 2024-05-06 at 1.26.47 PM.jpeg'),OnBoardingModel(title: 'Choose what to do next', des: 'Get trusted advice about your care options',imageUrl: 'asset/images/img.png'),];
   int selectedIndex =0;
   void change(int index){
 

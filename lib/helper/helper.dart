@@ -7,14 +7,21 @@ class Helper{
 
   final RegExp numberRegExp = RegExp(r'\d');
 
-  String? emailValidation(value) {
+  String? emailValidation(String value,{bool isRequired =true}) {
     RegExp regExp = RegExp(emailRegString);
-    if (value!.isEmpty) {
-      return ('Please Enter Email');
-    } else if (!regExp.hasMatch(value)) {
+    if(isRequired) {
+      if (value!.isEmpty) {
+        return ('Please Enter Email');
+      } else if (!regExp.hasMatch(value)) {
+        return ('Please, Enter Valid Email');
+      } else {
+        return null;
+      }
+    }
+    else if (value.isNotEmpty && !regExp.hasMatch(value)) {
       return ('Please, Enter Valid Email');
-    } else {
-      return null;
+    }else{
+     return null;
     }
 
   }
